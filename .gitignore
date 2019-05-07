@@ -1,0 +1,7 @@
+.project
+.cproject
+.settings
+
+build/
+build/obj/
+build/tobj/
