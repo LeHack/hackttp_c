@@ -14,6 +14,7 @@ MKDIR_P = mkdir -p
 BDIR=build
 ODIR=build/obj
 TODIR=build/tobj
+XMLDIR=test-output
 
 LDIR =../lib
 SRCDIR=src
@@ -45,14 +46,20 @@ run_tests: $(ODIR)/simple.o $(TOBJ)
 test: directories run_tests
 	$(BDIR)/run_tests
 
+test-xml: directories run_tests
+	cd $(XMLDIR) &&	../$(BDIR)/run_tests -o junit
+
 all: directories main test
 
-.PHONY: clean test directories
+jenkins: directories main test-xml
+
+.PHONY: clean directories jenkins test test-xml
 
 clean:
-	rm -rf $(BDIR) *~ core $(INCDIR)/*~
+	rm -rf $(BDIR) $(XMLDIR) *~ core $(INCDIR)/*~
 
 directories:
 	@if [ ! -d "$(BDIR)" ];  then $(MKDIR_P) $(BDIR); fi;
 	@if [ ! -d "$(ODIR)" ];  then $(MKDIR_P) $(ODIR); fi;
 	@if [ ! -d "$(TODIR)" ]; then $(MKDIR_P) $(TODIR); fi;
+	@if [ ! -d "$(XMLDIR)" ]; then $(MKDIR_P) $(XMLDIR); fi;
