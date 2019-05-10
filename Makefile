@@ -4,7 +4,7 @@ CXX=g++
 CFLAGS=-I$(IDIR)
 
 CPPUTEST_HOME=/usr
-CPPFLAGS += -I$(CPPUTEST_HOME)/include
+CPPFLAGS += -I$(CPPUTEST_HOME)/include -I$(IDIR)
 #CXXFLAGS += -include $(CPPUTEST_HOME)/include/CppUTest/MemoryLeakDetectorNewMacros.h
 #CFLAGS += -include $(CPPUTEST_HOME)/include/CppUTest/MemoryLeakDetectorMallocMacros.h
 LD_LIBRARIES = -L$(CPPUTEST_HOME)/lib -lCppUTest -lCppUTestExt
@@ -27,7 +27,7 @@ DEPS = $(patsubst %,$(IDIR)/%,$(_DEPS))
 _OBJ = main.o simple.o 
 OBJ = $(patsubst %,$(ODIR)/%,$(_OBJ))
 
-_TOBJ = main.o simple.o
+_TOBJ = runner.o simple.o
 TOBJ = $(patsubst %,$(TODIR)/%,$(_TOBJ))
 
 $(ODIR)/%.o: $(SRCDIR)/%.c $(DEPS)
@@ -39,18 +39,20 @@ $(TODIR)/%.o: $(TDIR)/%.cpp
 main: $(OBJ)
 	$(CC) -o $(BDIR)/$@ $^ $(CFLAGS) $(LIBS)
 
-run_tests: $(TOBJ)
+run_tests: $(ODIR)/simple.o $(TOBJ)
 	$(CXX) -o $(BDIR)/$@ $^ $(CPPFLAGS) $(LIBS) $(LD_LIBRARIES)
 
 test: directories run_tests
 	$(BDIR)/run_tests
 
-all: directories main
+all: directories main test
 
 .PHONY: clean test directories
 
 clean:
-	rm -f $(BDIR)/* $(ODIR)/*.o $(TODIR)/*.o *~ core $(INCDIR)/*~
+	rm -rf $(BDIR) *~ core $(INCDIR)/*~
 
 directories:
-	$(MKDIR_P) $(BDIR) $(ODIR) $(TODIR)
+	@if [ ! -d "$(BDIR)" ];  then $(MKDIR_P) $(BDIR); fi;
+	@if [ ! -d "$(ODIR)" ];  then $(MKDIR_P) $(ODIR); fi;
+	@if [ ! -d "$(TODIR)" ]; then $(MKDIR_P) $(TODIR); fi;

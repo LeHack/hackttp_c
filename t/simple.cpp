@@ -1,14 +1,12 @@
 #include "CppUTest/TestHarness.h"
+#include <string.h>
+#include <simple.h>
 
-TEST_GROUP(FirstTestGroup) {
-};
+TEST_GROUP(SimpleTestGroup) {};
 
-TEST(FirstTestGroup, FirstTest) {
-   FAIL("Fail me!");
-}
+TEST(SimpleTestGroup, CheckOutput) {
+	const char *output = get_hello_text();
 
-TEST(FirstTestGroup, SecondTest) {
-   STRCMP_EQUAL("hello", "world");
-   LONGS_EQUAL(1, 2);
-   CHECK(false);
+	LONGS_EQUAL(15, strlen(output));
+    STRCMP_EQUAL("Hello world10!\n", output);
 }
